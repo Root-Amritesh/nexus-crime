@@ -1,0 +1,8 @@
+- No scored node/edge may exist in Neo4j without a non-empty evidence array at write time (PRD FR-10). This is enforced in the data model, not the presentation layer. If you find yourself writing code to reconstruct evidence after the fact, stop — that's a sign the write path is wrong.
+- Every processing endpoint requires case_reference. No exceptions for "testing convenience."
+- No demographic features anywhere in ingestion schemas or the scoring formula, ever.
+- Never string-concatenate into SQL or Cypher. Parameterized queries only, both databases.
+- Phone/IMSI identifiers are SHA-256 hashed before they enter the pipeline. Never add a raw-identifier field "just for debugging."
+- Risk score weights live in configs/risk_weights.yaml, never hardcoded in risk_score.py.
+- If a signal is missing, exclude and reweight — never silently score 0.
+- Every pipeline-stage transition (ingestion, extraction, correlation, graph write, scoring) logs one structured line minimum containing: request_id, timestamp, stage, outcome.

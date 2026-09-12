@@ -1,0 +1,1109 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NEXUS-CRIME",
+    "description": "Multi-Source Crime Data Ingestion & Analytics Pipeline",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/upload/tower-dump": {
+      "post": {
+        "tags": [
+          "Upload"
+        ],
+        "summary": "Upload a tower dump CSV for a given case",
+        "description": "Ingests and validates a tower dump CSV file.\nRejects malformed schemas, unknown tower metadata, and handles duplicate records gracefully.\nTriggers correlation pipeline in background.",
+        "operationId": "upload_tower_dump_api_v1_upload_tower_dump_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_tower_dump_api_v1_upload_tower_dump_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/upload/cdr": {
+      "post": {
+        "tags": [
+          "Upload"
+        ],
+        "summary": "Upload Call Detail Records (CDR) CSV for a given case",
+        "description": "Ingests and validates a CDR CSV file.\nTriggers correlation pipeline in background.",
+        "operationId": "upload_cdr_api_v1_upload_cdr_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_cdr_api_v1_upload_cdr_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/upload/financial": {
+      "post": {
+        "tags": [
+          "Upload"
+        ],
+        "summary": "Upload Financial Records CSV for a given case",
+        "description": "Ingests and validates a Financial records CSV file.",
+        "operationId": "upload_financial_api_v1_upload_financial_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_financial_api_v1_upload_financial_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/upload/fir-text": {
+      "post": {
+        "tags": [
+          "Upload"
+        ],
+        "summary": "Upload raw FIR narrative text for entity extraction",
+        "description": "Validates case reference and registers FIR text.\nEntity extraction is handled in a downstream AI stage.",
+        "operationId": "upload_fir_text_api_v1_upload_fir_text_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FIRTextRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FIRExtractionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Get application database health status",
+        "description": "Checks connection to both PostgreSQL and Neo4j databases.",
+        "operationId": "get_health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases": {
+      "get": {
+        "tags": [
+          "Cases"
+        ],
+        "summary": "List all cases (Supervisor only)",
+        "description": "Returns a list of all cases.\nGated by role: Only 'supervisor' can list all cases.",
+        "operationId": "list_cases_api_v1_cases_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response List Cases Api V1 Cases Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}/suspects": {
+      "get": {
+        "tags": [
+          "Cases"
+        ],
+        "summary": "Get ranked suspect list for a case",
+        "description": "Read-only endpoint to retrieve the ranked suspect list for a case.\nReturns 404 if the case does not exist.\nReturns 200 with an empty list if no suspects are flagged (valid empty state per PRD Section 31).",
+        "operationId": "get_case_suspects_api_v1_cases__case_id__suspects_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuspectsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}/graph": {
+      "get": {
+        "tags": [
+          "Cases"
+        ],
+        "summary": "Get case relationship graph for network visualization",
+        "description": "Read-only endpoint to retrieve case graph nodes and evidence-linked edges.\nReturns 404 if the case does not exist.\nReturns 200 with empty nodes/edges if no graph data is present.",
+        "operationId": "get_case_graph_api_v1_cases__case_id__graph_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GraphResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}/map-data": {
+      "get": {
+        "tags": [
+          "Cases"
+        ],
+        "summary": "Get geospatial coordinates for towers, scenes, and flagged suspects",
+        "description": "Read-only endpoint to retrieve map geospatial data for a case.\nReturns 404 if the case does not exist.\nReturns 200 with empty lists if data is empty.",
+        "operationId": "get_case_map_data_api_v1_cases__case_id__map_data_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapDataResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/suspects/{device_hash}/evidence": {
+      "get": {
+        "tags": [
+          "Suspects"
+        ],
+        "summary": "Get explainability supporting evidence trail for a suspect",
+        "description": "Read-only endpoint to retrieve the attached evidence trail for a suspect.\nReturns 200 with an empty evidence list if no edges exist for this device hash\n(per api-contract.md convention).",
+        "operationId": "get_suspect_evidence_api_v1_suspects__device_hash__evidence_get",
+        "parameters": [
+          {
+            "name": "device_hash",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Device Hash"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuspectEvidenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}/query": {
+      "get": {
+        "tags": [
+          "Query"
+        ],
+        "summary": "Evidence-grounded graph query \u2014 ask a question, get a cited answer",
+        "description": "Evidence-Grounded Graph RAG endpoint.\nMaps structured question patterns to existing graph/SQL queries and returns\na templated natural-language answer with cited evidence records.\n\nSupported question patterns:\n- \"Why is [device] flagged?\" \u2014 risk breakdown + evidence\n- \"How is [A] connected to [B]?\" \u2014 shortest path + edge evidence\n- \"Show evidence for [device]\" \u2014 all evidence records\n- \"Who are the top suspects?\" \u2014 ranked suspect list\n- \"Summarize the case\" \u2014 case overview with graph stats\n\nNo external LLM API is used. Answers are template-based, grounded in\nreal graph data. All findings are labeled as investigative leads.",
+        "operationId": "query_case_graph_api_v1_cases__case_id__query_get",
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Natural-language question about the case",
+              "title": "Q"
+            },
+            "description": "Natural-language question about the case"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_upload_cdr_api_v1_upload_cdr_post": {
+        "properties": {
+          "case_reference": {
+            "type": "string",
+            "title": "Case Reference",
+            "description": "Legal reference identifier for the case"
+          },
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "CSV file containing caller_hash, callee_hash, timestamp, duration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_reference",
+          "file"
+        ],
+        "title": "Body_upload_cdr_api_v1_upload_cdr_post"
+      },
+      "Body_upload_financial_api_v1_upload_financial_post": {
+        "properties": {
+          "case_reference": {
+            "type": "string",
+            "title": "Case Reference",
+            "description": "Legal reference identifier for the case"
+          },
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "CSV file containing sender_hash, receiver_hash, amount, timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_reference",
+          "file"
+        ],
+        "title": "Body_upload_financial_api_v1_upload_financial_post"
+      },
+      "Body_upload_tower_dump_api_v1_upload_tower_dump_post": {
+        "properties": {
+          "case_reference": {
+            "type": "string",
+            "title": "Case Reference",
+            "description": "Legal reference identifier for the case"
+          },
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "CSV file containing phone_hash, tower_id, timestamp, signal_strength"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_reference",
+          "file"
+        ],
+        "title": "Body_upload_tower_dump_api_v1_upload_tower_dump_post"
+      },
+      "EvidenceCitation": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "description"
+        ],
+        "title": "EvidenceCitation",
+        "description": "A single piece of evidence supporting the answer."
+      },
+      "EvidenceItem": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Evidence type (e.g. CO_LOCATED_AT, CO_MOVED_WITH)"
+          },
+          "tower_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tower Id",
+            "description": "Associated tower identifier"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp",
+            "description": "Event timestamp (ISO 8601)"
+          },
+          "scene_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scene Id",
+            "description": "Associated crime scene identifier if applicable"
+          },
+          "time_delta_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Delta Seconds",
+            "description": "Time delta for co-movement if applicable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "title": "EvidenceItem"
+      },
+      "FIRExtractionResponse": {
+        "properties": {
+          "entities_extracted": {
+            "items": {},
+            "type": "array",
+            "title": "Entities Extracted"
+          },
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id"
+        ],
+        "title": "FIRExtractionResponse"
+      },
+      "FIRTextRequest": {
+        "properties": {
+          "case_reference": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Case Reference"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_reference",
+          "text"
+        ],
+        "title": "FIRTextRequest"
+      },
+      "GraphEdge": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Source device hash"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target",
+            "description": "Target device hash"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "CO_LOCATED_AT",
+              "CO_MOVED_WITH",
+              "CALLED",
+              "TRANSACTED_WITH"
+            ],
+            "title": "Type",
+            "description": "Connection type (CO_LOCATED_AT, CO_MOVED_WITH)"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight",
+            "description": "Strength/frequency of connection"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence",
+            "description": "Attached evidence audit trail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "target",
+          "type",
+          "weight"
+        ],
+        "title": "GraphEdge"
+      },
+      "GraphNode": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Device identifier hash"
+          },
+          "risk_score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Risk Score",
+            "description": "Computed risk score (0-1)"
+          },
+          "community": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Community",
+            "description": "Louvain community ID"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "risk_score",
+          "community"
+        ],
+        "title": "GraphNode"
+      },
+      "GraphResponse": {
+        "properties": {
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/GraphNode"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/GraphEdge"
+            },
+            "type": "array",
+            "title": "Edges"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nodes",
+          "edges"
+        ],
+        "title": "GraphResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MapCrimeScene": {
+        "properties": {
+          "scene_id": {
+            "type": "string",
+            "title": "Scene Id",
+            "description": "Crime scene identifier"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "description": "Crime scene latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "description": "Crime scene longitude"
+          },
+          "incident_type": {
+            "type": "string",
+            "title": "Incident Type",
+            "description": "Type of incident"
+          },
+          "time_window_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time Window Start",
+            "description": "Start of incident window"
+          },
+          "time_window_end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time Window End",
+            "description": "End of incident window"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scene_id",
+          "latitude",
+          "longitude",
+          "incident_type",
+          "time_window_start",
+          "time_window_end"
+        ],
+        "title": "MapCrimeScene"
+      },
+      "MapDataResponse": {
+        "properties": {
+          "towers": {
+            "items": {
+              "$ref": "#/components/schemas/MapTower"
+            },
+            "type": "array",
+            "title": "Towers"
+          },
+          "crime_scenes": {
+            "items": {
+              "$ref": "#/components/schemas/MapCrimeScene"
+            },
+            "type": "array",
+            "title": "Crime Scenes"
+          },
+          "flagged_devices": {
+            "items": {
+              "$ref": "#/components/schemas/MapFlaggedDevice"
+            },
+            "type": "array",
+            "title": "Flagged Devices"
+          }
+        },
+        "type": "object",
+        "title": "MapDataResponse"
+      },
+      "MapFlaggedDevice": {
+        "properties": {
+          "device_hash": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Device Hash",
+            "description": "Device phone hash"
+          },
+          "risk_score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Risk Score",
+            "description": "Risk score"
+          },
+          "flagged_scenes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Flagged Scenes",
+            "description": "Scenes where device was flagged"
+          }
+        },
+        "type": "object",
+        "required": [
+          "device_hash",
+          "risk_score"
+        ],
+        "title": "MapFlaggedDevice"
+      },
+      "MapTower": {
+        "properties": {
+          "tower_id": {
+            "type": "string",
+            "title": "Tower Id",
+            "description": "Tower identifier"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "description": "Tower latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "description": "Tower longitude"
+          },
+          "coverage_radius_km": {
+            "type": "number",
+            "title": "Coverage Radius Km",
+            "description": "Coverage radius in km"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tower_id",
+          "latitude",
+          "longitude",
+          "coverage_radius_km"
+        ],
+        "title": "MapTower"
+      },
+      "QueryResponse": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceCitation"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "query_type": {
+            "type": "string",
+            "title": "Query Type"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer",
+            "default": "This is an investigative lead generated from correlated evidence patterns. It is not a verdict and must be independently verified by authorized investigators."
+          }
+        },
+        "type": "object",
+        "required": [
+          "question",
+          "answer",
+          "evidence",
+          "query_type"
+        ],
+        "title": "QueryResponse",
+        "description": "Response from the graph query endpoint."
+      },
+      "ScoreBreakdown": {
+        "properties": {
+          "centrality": {
+            "type": "number",
+            "title": "Centrality",
+            "description": "Normalized centrality score (0-1)"
+          },
+          "colocation_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Colocation Count"
+          },
+          "comovement_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Comovement Count"
+          },
+          "call_frequency": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Call Frequency"
+          }
+        },
+        "type": "object",
+        "required": [
+          "centrality",
+          "colocation_count",
+          "comovement_count",
+          "call_frequency"
+        ],
+        "title": "ScoreBreakdown"
+      },
+      "SuspectEvidenceResponse": {
+        "properties": {
+          "device_hash": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Device Hash",
+            "description": "Target device hash"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceItem"
+            },
+            "type": "array",
+            "title": "Evidence",
+            "description": "Flattened list of audit evidence items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "device_hash"
+        ],
+        "title": "SuspectEvidenceResponse"
+      },
+      "SuspectItem": {
+        "properties": {
+          "device_hash": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Device Hash"
+          },
+          "risk_score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Risk Score"
+          },
+          "score_breakdown": {
+            "$ref": "#/components/schemas/ScoreBreakdown"
+          },
+          "flagged_scenes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Flagged Scenes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "device_hash",
+          "risk_score",
+          "score_breakdown"
+        ],
+        "title": "SuspectItem"
+      },
+      "SuspectsResponse": {
+        "properties": {
+          "suspects": {
+            "items": {
+              "$ref": "#/components/schemas/SuspectItem"
+            },
+            "type": "array",
+            "title": "Suspects"
+          }
+        },
+        "type": "object",
+        "required": [
+          "suspects"
+        ],
+        "title": "SuspectsResponse"
+      },
+      "UploadResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "accepted"
+          },
+          "records_ingested": {
+            "type": "integer",
+            "title": "Records Ingested"
+          },
+          "records_rejected": {
+            "type": "integer",
+            "title": "Records Rejected"
+          },
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "records_ingested",
+          "records_rejected",
+          "job_id"
+        ],
+        "title": "UploadResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

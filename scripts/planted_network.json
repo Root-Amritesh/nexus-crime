@@ -1,0 +1,46 @@
+{
+  "case_reference": "CASE-DEMO-001",
+  "true_positives": [
+    {
+      "id": "TP-01",
+      "device_hash": "b241e69590243b73294ea1da9bce87f1452ac15c50b59fbf3c91698ab3f7e2f5",
+      "role": "Syndicate Leader",
+      "reason": "Co-located at Scene 1 & Scene 2 (>=2 scenes) and co-moved on 2 days with TP-03",
+      "expected_flagged": true
+    },
+    {
+      "id": "TP-02",
+      "device_hash": "7fbbef964c17d50ed5b43cfa2bd8675c4a3ddc2a3950fe32d1395f173b6e685d",
+      "role": "Field Operative",
+      "reason": "Co-located at Scene 1 & Scene 3 (>=2 scenes)",
+      "expected_flagged": true
+    },
+    {
+      "id": "TP-03",
+      "device_hash": "8963666809dd578c2ae5802f77f2079812ac5e2898bd26f77006bacfc68b1d6a",
+      "role": "Logistics / Courier",
+      "reason": "Co-moved with TP-01 on 2 distinct days (2026-08-30 and 2026-08-31)",
+      "expected_flagged": true
+    }
+  ],
+  "near_miss_negatives": [
+    {
+      "id": "NM-01",
+      "device_hash": "7355981e8992a80509ace13b1335c2a8cd545b8360935685134fa7cb54f66f14",
+      "reason": "Present only at Scene 1 (1 scene -> below 2-scene threshold)",
+      "expected_flagged": false
+    },
+    {
+      "id": "NM-02",
+      "device_hash": "c12260777c3ba298b99f2663a86537711b43e9732e18f8b076e677598b3ed60e",
+      "reason": "Co-occurred with TP-02 on only 1 calendar day (2026-08-30) -> weak evidence only",
+      "expected_flagged": false
+    },
+    {
+      "id": "NM-03",
+      "device_hash": "9fd7f2b9b5f8475cebdb874b539f9acbfa7464ff54b048aa5fb1f2324d30a1dd",
+      "reason": "Pinged Tower 1 at 2026-08-30T15:00:00Z (outside Scene 1 window 10:00-12:00)",
+      "expected_flagged": false
+    }
+  ]
+}

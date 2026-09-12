@@ -1,0 +1,1 @@
+{"nodes": [{"id": "$graphify-root$_agents_skills_graphify_graphify_command_kilo_md", "label": "command-kilo.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/skills/graphify/graphify/command-kilo.md", "source_location": "L1", "frontmatter": {"description": "Build or query a graphify knowledge graph"}}], "edges": [], "input_tokens": 0, "output_tokens": 0}

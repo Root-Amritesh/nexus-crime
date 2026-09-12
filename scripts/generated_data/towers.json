@@ -1,0 +1,32 @@
+[
+  {
+    "tower_id": "TOW-BLR-001",
+    "latitude": 12.97159,
+    "longitude": 77.59456,
+    "coverage_radius_km": 1.5
+  },
+  {
+    "tower_id": "TOW-BLR-002",
+    "latitude": 12.978,
+    "longitude": 77.602,
+    "coverage_radius_km": 1.5
+  },
+  {
+    "tower_id": "TOW-BLR-003",
+    "latitude": 12.985,
+    "longitude": 77.61,
+    "coverage_radius_km": 2.0
+  },
+  {
+    "tower_id": "TOW-BLR-004",
+    "latitude": 12.96,
+    "longitude": 77.585,
+    "coverage_radius_km": 1.5
+  },
+  {
+    "tower_id": "TOW-BLR-005",
+    "latitude": 12.965,
+    "longitude": 77.59,
+    "coverage_radius_km": 1.5
+  }
+]

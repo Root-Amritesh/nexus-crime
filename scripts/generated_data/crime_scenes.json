@@ -1,0 +1,29 @@
+[
+  {
+    "scene_id": "SCENE-BLR-01",
+    "case_reference": "CASE-DEMO-001",
+    "latitude": 12.9716,
+    "longitude": 77.59458,
+    "time_window_start": "2026-08-30T10:00:00Z",
+    "time_window_end": "2026-08-30T12:00:00Z",
+    "incident_type": "Commercial Burglary"
+  },
+  {
+    "scene_id": "SCENE-BLR-02",
+    "case_reference": "CASE-DEMO-001",
+    "latitude": 12.97805,
+    "longitude": 77.60205,
+    "time_window_start": "2026-08-31T02:00:00Z",
+    "time_window_end": "2026-08-31T04:00:00Z",
+    "incident_type": "Armed Robbery"
+  },
+  {
+    "scene_id": "SCENE-BLR-03",
+    "case_reference": "CASE-DEMO-001",
+    "latitude": 12.98502,
+    "longitude": 77.61003,
+    "time_window_start": "2026-08-31T14:00:00Z",
+    "time_window_end": "2026-08-31T16:00:00Z",
+    "incident_type": "Extortion"
+  }
+]

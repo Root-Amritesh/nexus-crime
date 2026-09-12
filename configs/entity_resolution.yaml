@@ -1,0 +1,5 @@
+# Entity Resolution Thresholds & Weights
+# Blueprint Section 13.4 / PRD Section 20
+
+auto_merge_threshold: 90.0
+human_review_threshold: 70.0

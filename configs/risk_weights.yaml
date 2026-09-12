@@ -1,0 +1,7 @@
+# 13.1 Risk Scoring Formula Weights
+# Blueprint Section 13.1 / PRD Section 20
+centrality: 0.30
+colocation: 0.25
+comovement: 0.25
+call_frequency: 0.20
+cap: 5

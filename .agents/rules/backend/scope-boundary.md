@@ -1,0 +1,3 @@
+- Frontend (frontend/) is complete and out of scope unless explicitly requested.
+- Do not build RBAC, real auth, streaming ingestion, or DBSCAN clustering — these are Future Roadmap items (PRD Section 43), not MVP.
+- Do not proceed to a stage's scope before it's explicitly named by the user (e.g. "Stage 2").
